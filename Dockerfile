@@ -6,4 +6,7 @@ RUN gem install rails bundler
 VOLUME ["/app"]
 WORKDIR /app
 COPY . .
+
+RUN gem install rubocop
+
 RUN bundle install

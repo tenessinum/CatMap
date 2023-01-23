@@ -1,0 +1,158 @@
+<script src="https://cdn.jsdelivr.net/npm/ol@v7.2.2/dist/ol.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.2.2/ol.css">
+<%= stylesheet_link_tag "map" %>
+<%= stylesheet_link_tag "modal" %>
+
+<div class="map-content-container">
+  <div class="cat-list" id="cat_list"></div>
+  <div class="map-container">
+    <div id="map" style="width: 100%; height: 100%;"></div>
+    <%= image_tag "icons/logo_mini.svg" %>
+    <% if user_signed_in? %>
+      <div onclick="showModal()" class="add-cat-button"><%= I18n.t("add_cat") %></div>
+    <% end %>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div onclick="hideModal(event)" class="modal-background">
+    <form onsubmit="return markCat(event)" class="modal-container">
+      <div class="field">
+        <%= I18n.t("cat_title") %><br />
+        <%= text_field_tag :title, "Basic Cat", autofocus: true, required: true %>
+      </div>
+      <div class="field">
+        <%= I18n.t("cat_description") %><br />
+        <%= text_field_tag :description, "Here lies the cat", required: true %>
+      </div>
+      <%= submit_tag I18n.t("mark_cat") %>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById("map").innerHTML = "";
+
+
+function markCat(e) {
+  if (e.target && e.target.reportValidity()) {
+    hideModal();
+    let data = new FormData(e.target);
+    let center = getCenter();
+    data.append("lon", center[0]);
+    data.append("lat", center[1]);
+    console.log(data);
+    let xhr = new XMLHttpRequest();
+    xhr.open("post", "/point/create", true);
+    xhr.send(data);
+    xhr.onload = () => {
+      updatePoints();
+    }
+    e.target.reset();
+  }
+  e.preventDefault();
+  return false;
+}
+
+function updatePoints() {
+  let center = getCenter();
+  let extent = map.getView().calculateExtent(map.getSize());
+  let p1 = ol.proj.toLonLat([extent[0], extent[1]])
+  let p2 = ol.proj.toLonLat([extent[2], extent[3]])
+  let radius = calcDist(center[0], center[1], p1[0], p1[1]);
+  radius += calcDist(center[0], center[1], p2[0], p2[1]);
+  radius /= 2;
+  let data = new FormData();
+  data.append("lon", center[0]);
+  data.append("lat", center[1]);
+  data.append("radius", radius);
+  let xhr = new XMLHttpRequest();
+  xhr.open("post", "/point/extract.json", true);
+  xhr.send(data);
+  xhr.onload = () => {
+    let features = [];
+    let numberOfFeatures = 0;
+    let points = JSON.parse(xhr.response);
+    points.forEach((raw_point) => {
+      let point = new ol.geom.Point(ol.proj.fromLonLat([
+        raw_point.lon, raw_point.lat
+      ]))
+      features.push(new ol.Feature(point));
+      numberOfFeatures += 1;
+    })
+
+    let clusterLayer = new ol.layer.Vector({
+        source: new ol.source.Vector({
+            features: features 
+        }),
+    });
+
+    clusterLayer.meta = "point_layer"
+
+    const layers = [...map.getLayers().getArray()]
+    layers.forEach((layer) => {
+      if (layer.meta === "point_layer")
+        map.removeLayer(layer)
+    })
+    map.addLayer(clusterLayer);
+
+    xhr.open("post", "/point/extract", true);
+    xhr.send(data);
+    xhr.onload = () => {
+      document.getElementById('cat_list').innerHTML = xhr.response;
+    }
+  }
+}
+
+function showModal() {
+  document.getElementById("modal").classList.add("shown");
+}
+
+function hideModal(e) {
+  if (!e || e.target === document.getElementsByClassName("modal-background")[0])
+    document.getElementById("modal").classList.remove("shown");
+}
+
+function getCenter() {
+  return ol.proj.toLonLat(map.getView().getCenter())
+}
+
+function toRad(Value) {
+  return Value * Math.PI / 180;
+}
+
+function calcDist(lon1, lat1, lon2, lat2) {
+  let R = 6371; // km
+  let dLat = toRad(lat2-lat1);
+  let dLon = toRad(lon2-lon1);
+  lat1 = toRad(lat1);
+  lat2 = toRad(lat2);
+
+  let a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+  let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  let d = R * c;
+  return d;
+}
+
+try {
+  var map = new ol.Map({
+    layers: [
+      new ol.layer.Tile({
+        source: new ol.source.OSM({})
+      })
+    ],
+    target: 'map',
+    view: new ol.View({
+      center: ol.proj.fromLonLat([37.618423, 55.751244]),
+      maxZoom: 18,
+      zoom: 12
+    })
+ });
+ map.on('moveend', (e) => {
+  updatePoints();
+ });
+} catch (e) {
+  console.log(e)
+}
+</script>

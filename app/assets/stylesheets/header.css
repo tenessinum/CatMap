@@ -1,0 +1,26 @@
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    height: calc(var(--header-height) - 40px);
+}
+
+.header a {
+    text-decoration: none;
+}
+
+.header button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    margin: unset;
+    padding: unset;
+    font: unset;
+}
+
+.header * {
+    font-size: 20px;
+    color: black;
+}

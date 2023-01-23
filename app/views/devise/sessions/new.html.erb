@@ -1,0 +1,28 @@
+<%= stylesheet_link_tag "form" %>
+<div class="form-container">
+  <div class="form-title"><%= I18n.t("log_in") %></div>
+
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+    <div class="field">
+      <%= I18n.t("email") %><br />
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", required: true %>
+    </div>
+
+    <div class="field">
+      <%= I18n.t("password") %><br />
+      <%= f.password_field :password, autocomplete: "current-password", required: true %>
+    </div>
+
+    <% if devise_mapping.rememberable? %>
+      <div class="field">
+        <%= f.check_box :remember_me %>
+        <%= I18n.t("remember_me") %><br />
+      </div>
+    <% end %>
+
+    <div class="actions">
+      <%= f.submit I18n.t("log_in") %>
+      <%= link_to I18n.t("sign_up"), new_user_registration_path %>
+    </div>
+  <% end %>
+</div>

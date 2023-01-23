@@ -1,0 +1,107 @@
+.map-container {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    --icon-size: 5em;
+}
+
+.map-container>* {
+    grid-area: 1 / 1;
+}
+
+.map-container>img {
+    z-index: 1000;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    position: relative;
+    top: calc(50% - var(--icon-size));
+    left: calc(50% - var(--icon-size) / 2);
+}
+
+.map-container>.add-cat-button {
+    z-index: 1000;
+    background-color: #D31519;
+    color: white;
+    margin: auto;
+    margin-right: 1em;
+    margin-bottom: 1em;
+    text-decoration: none;
+    padding: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.map-content-container {
+    height: calc(100% - var(--header-height));
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+}
+
+.cat-list {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.cat-card {
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #7b7b7b;
+    border-radius: 5px;
+    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    height: fit-content;
+    gap: 10px;
+    width: calc(100% - 40px);
+}
+
+.cat-card>.buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+}
+
+.cat-card * {
+    vertical-align: middle;
+}
+
+.cat-card>.buttons * {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font: unset;
+    background-color: #D31519;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    padding: 0.1rem 0.5rem;
+    cursor: pointer;
+    text-overflow: ellipsis;
+}
+
+@media screen and (max-width: 600px) {
+    .map-content-container {
+        flex-direction: column;
+    }
+
+    .cat-list {
+        width: 100%;
+        height: 30%;
+        flex-direction: row;
+        overflow-y: hidden;
+        overflow-x: auto;
+    }
+
+    .cat-card {
+        position: sticky;
+        min-width: calc(100% - 40px);
+        height: calc(100% - 40px);
+    }
+}

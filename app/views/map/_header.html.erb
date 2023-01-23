@@ -1,0 +1,10 @@
+<%= stylesheet_link_tag "header" %>
+
+<div class="header">
+    <div><%= I18n.t("header_title") %></div>
+    <% if user_signed_in? %>
+        <%= button_to I18n.t("log_out"), destroy_user_session_path, method: "delete", :remote => true %>
+    <% else %>
+        <%= link_to I18n.t("log_in"), new_user_session_path %>
+    <% end %>
+</div>

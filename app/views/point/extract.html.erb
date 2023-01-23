@@ -8,7 +8,6 @@
         <%= point[:description] %>
       </div>
       <div class="buttons">
-        <%= button_to I18n.t("find"), compass_find_path %>
         <% if user_signed_in? && (current_user.email == point.finder) %>
           <%= button_to I18n.t("remove"), {:controller => "point", :action => "remove", :point_id => point.id}, method: "delete", :remote => true %>
         <% end %>

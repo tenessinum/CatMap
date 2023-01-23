@@ -14,9 +14,6 @@ class PointController < ApplicationController
     )
   end
 
-  def edit
-  end
-
   def remove
     @point = Point.find(params[:point_id].to_i)
     if @point.finder == current_user.email then @point.destroy end

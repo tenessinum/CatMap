@@ -8,3 +8,8 @@ services:
     volumes:
       - ./:/app
     command: "rails server -b 0.0.0.0"
+  test:
+    build: .
+    volumes:
+      - ./:/app
+    command: "rails test"

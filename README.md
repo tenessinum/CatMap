@@ -1,24 +1,28 @@
-# README
+# Зачетная работа
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Чтобы запустить напишите
 
-Things you may want to cover:
+```bash
+docker-compose build catmap
+docker-compose up catmap
+```
 
-* Ruby version
+Для тестов
 
-* System dependencies
+```bash
+docker-compose up test
+```
 
-* Configuration
+Для тестов селениумом
 
-* Database creation
+```bash
+docker-compose up selenium
+```
 
-* Database initialization
+И в другом окне
 
-* How to run the test suite
+```bash
+docker-compose up selenium-test
+```
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+На *localhost:7900* можно будет смотреть что там происходит
